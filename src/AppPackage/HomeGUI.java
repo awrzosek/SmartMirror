@@ -58,15 +58,16 @@ public class HomeGUI extends javax.swing.JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // get notes every few seconds
-        Runnable helloRunnable = new Runnable() {
+        Runnable notesRunnable = new Runnable() {
             public void run() {
                 getNotes();
             }
         };
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(helloRunnable, 0, 3, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(notesRunnable, 0, 3, TimeUnit.SECONDS);
 
+        // uruchomienie aplikacji w trybie pełnoekranowym
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         
         getWeather();

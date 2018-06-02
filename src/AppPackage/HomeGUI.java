@@ -3,30 +3,20 @@ package AppPackage;
 
 
 import com.google.gson.*;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.*;
-import com.google.gson.stream.JsonReader;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.List;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -34,8 +24,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import static javax.swing.UIManager.getString;
 import javax.swing.border.EmptyBorder;
 
 class weather {
@@ -80,9 +67,7 @@ public class HomeGUI extends javax.swing.JFrame {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(helloRunnable, 0, 3, TimeUnit.SECONDS);
 
-        //this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        //this.setMaximizedBounds(env.getMaximumWindowBounds());
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         
         getWeather();
         
@@ -97,9 +82,8 @@ public class HomeGUI extends javax.swing.JFrame {
         // Set the blank cursor to the JFrame.
         this.getContentPane().setCursor(blankCursor);
         //-------------------------------------------------------------
-        //IMAGE
-        
 
+        // nowy wątek dla wyświetlania zegara i daty
         new Thread() {
             public void run() {
                 while(true){
@@ -141,8 +125,8 @@ public class HomeGUI extends javax.swing.JFrame {
         String filePath = "imgs/" + imgName + ".png";
         try{
             img = ImageIO.read(new FileInputStream(filePath));
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (IOException e){
+            System.out.println(e.getMessage());
         }
         imageLabel.setIcon(new ImageIcon(img));
     }
@@ -150,13 +134,6 @@ public class HomeGUI extends javax.swing.JFrame {
     public static Map<String, Object> jsonToMap(String str) {
         Map<String, Object> map = new Gson().fromJson(
             str, new TypeToken<HashMap<String, Object>>() {}.getType()
-        );
-        return map;
-    }
-    
-    public static Map<String, notes[]> jsonToMap1(String str) {
-        Map<String, notes[]> map = new Gson().fromJson(
-            str, new TypeToken<HashMap<String, notes[]>>() {}.getType()
         );
         return map;
     }
@@ -178,7 +155,7 @@ public class HomeGUI extends javax.swing.JFrame {
             
             java.lang.reflect.Type listType = new TypeToken<ArrayList<notes>>(){}.getType();
             ArrayList<notes> notesList = new Gson().fromJson(arrayFromString, listType);
-            DefaultListModel<notes> listModel = new DefaultListModel<notes>();
+            DefaultListModel<notes> listModel = new DefaultListModel<>();
             for (int i = 0; i < notesList.size(); i++)
             {
                 listModel.addElement(notesList.get(i));
@@ -235,22 +212,9 @@ public class HomeGUI extends javax.swing.JFrame {
                     result .append(line);
                 }
             }
-//            tempLabel.setText(result.toString());
-//            System.out.println(result);
+            
             Map<String, Object> respMap = jsonToMap(result.toString());
-//            StringBuilder s = new StringBuilder();
-//            s.append(respMap.get("weather").toString().replaceAll("\\s+",""));
-            //System.out.println(s);
-            //System.out.println(s.length());
-//            s.append(ss);
-//            s.deleteCharAt(0);
-//            s.deleteCharAt(s.length()-1);
-            //s = s.substring(1);
-            //s = s.substring(0,s.length()-1);
-            //s = s.trim();
-            //s.append("{id:800,main:Clear,description:\"clear sky\",icon:01d}");
-            //"{\"id\":800,\"main\":\"Clear\",\"description\":\"clear sky\",\"icon\":\"01d\"}"
-            //Gson gson = new Gson();  
+            
             weather[] weatherArray = new Gson().fromJson(respMap.get("weather").toString().replaceAll("\\s+",""), weather[].class);
             getImg(weatherArray[0].description);
             switch(weatherArray[0].description){
@@ -264,24 +228,7 @@ public class HomeGUI extends javax.swing.JFrame {
                 case "snow" : weatherArray[0].description = "Śnieg"; break;
                 case "mist" : weatherArray[0].description = "Mgła"; break;  
             }
-//            Map<String, Object> weatherMap = jsonToMap(s.toString());
-            //Gson gson = new Gson();  
-            //Gson gson = new Gson();
-
-            //java.lang.reflect.Type type = new TypeToken<ArrayList<weatherObj>>(){}.getType();
-
-            //java.util.List<weatherObj> founderList = new Gson().fromJson(respMap.get("weather").toString(), type);
             
-            ArrayList<Object> x = new ArrayList<Object>();
-            //JsonReader reader = new JsonReader(new StringReader(s));
-            //reader.setLenient(true);
-            x = (ArrayList)respMap.get("weather");
-            //Map<String, Object> map = jsonToMap(s.toString());
-            ArrayList<weather> y = new ArrayList<weather>();
-            
-            //weather[] wo = new Gson().fromJson(s.toString(), weather[].class);
-            //Map<String, Object> mmmmMap = jsonToMap(respMap.get("description").toString());
-            //ArrayList w = (ArrayList)jsonToMap(respMap.get("weather").toString());
             Map<String, Object> mainMap = jsonToMap(respMap.get("main").toString());
             Map<String, Object> windMap = jsonToMap(respMap.get("wind").toString());
             
@@ -294,17 +241,6 @@ public class HomeGUI extends javax.swing.JFrame {
         catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        
-        
-        
-        /* stare, raczej do wywalenia
-        WeatherDoc doc = new WeatherDoc("1580913","c");
-        WeatherDisplay disp = new WeatherDisplay();
-        
-        String temp = disp.getTemperature();
-        
-        tempLabel.setText(temp);
-        */
     }
     
     @SuppressWarnings("unchecked")

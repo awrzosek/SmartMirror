@@ -57,20 +57,30 @@ public class HomeGUI extends javax.swing.JFrame {
         //fullscreen options
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // get notes every few seconds
+        // get notes every 3 seconds
         Runnable notesRunnable = new Runnable() {
             public void run() {
                 getNotes();
             }
         };
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(notesRunnable, 0, 3, TimeUnit.SECONDS);
-
+        ScheduledExecutorService executorNotes = Executors.newScheduledThreadPool(1);
+        executorNotes.scheduleAtFixedRate(notesRunnable, 0, 3, TimeUnit.SECONDS);
+        
+        // get weather info every 10 minutes
+        Runnable weatherRunnable = new Runnable() {
+            public void run() {
+                getWeather();
+            }
+        };
+        
+        ScheduledExecutorService executorWeather = Executors.newScheduledThreadPool(1);
+        executorWeather.scheduleAtFixedRate(weatherRunnable, 0, 10, TimeUnit.MINUTES);
+        
         // uruchomienie aplikacji w trybie pełnoekranowym
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         
-        getWeather();
+        //getWeather();
         
         // wyłączenie widoczności kursora
         // Transparent 16 x 16 pixel cursor image.
@@ -224,6 +234,7 @@ public class HomeGUI extends javax.swing.JFrame {
                 case "scatteredclouds" : weatherArray[0].description = "Pochmurnie"; break;
                 case "brokenclouds" : weatherArray[0].description = "Pochmurnie"; break;
                 case "showerrain" : weatherArray[0].description = "Ulewne deszcze"; break;
+                case "lightintensityshowerrain" : weatherArray[0].description = "Lekkie opady"; break;
                 case "rain" : weatherArray[0].description = "Deszczowo"; break;
                 case "thunderstorm" : weatherArray[0].description = "Burzowo"; break;
                 case "snow" : weatherArray[0].description = "Śnieg"; break;
@@ -318,6 +329,7 @@ public class HomeGUI extends javax.swing.JFrame {
         conditionLabel.setText("Czyste niebo");
         jPanel1.add(conditionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(291, 170, 260, -1));
 
+        imageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AppPackage/brokenclouds.png"))); // NOI18N
         imageLabel.setMaximumSize(new java.awt.Dimension(128, 128));
         imageLabel.setMinimumSize(new java.awt.Dimension(152, 128));
         imageLabel.setPreferredSize(new java.awt.Dimension(128, 152));
